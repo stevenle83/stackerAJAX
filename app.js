@@ -5,6 +5,8 @@ $(document).ready( function() {
 		$('.results').html('');
 		// get the value of the tags the user submitted
 		var tags = $(this).find("input[name='tags']").val();
+		//clear out input field if previous search was run
+		$('input').val("");
 		getUnanswered(tags);
 	});
 
@@ -13,6 +15,8 @@ $(document).ready( function() {
 		$('.results').html('');
 		//get the value of the tags the user submitted
 		var tags = $(this).find("input[name='answerers']").val();
+		//clear out input field if previous search was run
+		$('input').val("");
 		getInspiration(tags);
 	});
 
@@ -103,10 +107,12 @@ var showError = function(error){
 var getUnanswered = function(tags) {
 	
 	// the parameters we need to pass in our request to StackOverflow's API
-	var request = {tagged: tags,
-								site: 'stackoverflow',
-								order: 'desc',
-								sort: 'creation'};
+	var request = {
+		tagged: tags,
+		site: 'stackoverflow',
+		order: 'desc',
+		sort: 'creation'
+	};
 	
 	var result = $.ajax({
 		url: "http://api.stackexchange.com/2.2/questions/unanswered",
@@ -135,10 +141,10 @@ var getUnanswered = function(tags) {
 
 var getInspiration = function(tags) {
 	
-	var request = {site: 'stackoverflow'};
+	var request = { site: 'stackoverflow' };
 
 	var result = $.ajax({
-		url: "http://api.stackexchange.com/2.2/tags/tags/top-answerers/all_time",
+		url: "http://api.stackexchange.com/2.2/tags/" + tags + "/top-answerers/all_time",
 		data: request,
 		dataType: "jsonp",
 		type: "GET",

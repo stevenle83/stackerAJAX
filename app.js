@@ -1,4 +1,5 @@
 $(document).ready( function() {
+
 	$('.unanswered-getter').submit( function(event){
 		// zero out results if previous search has run
 		$('.results').html('');
@@ -6,6 +7,15 @@ $(document).ready( function() {
 		var tags = $(this).find("input[name='tags']").val();
 		getUnanswered(tags);
 	});
+
+	$('.inspiration-getter').submit(function(event) { 
+		//sero out results if previous search has run
+		$('.results').html('');
+		//get the value of the tags the user submitted
+		var tags = $(this).find("input[name='answerers']").val();
+		getInspiration(tags);
+	});
+
 });
 
 // this function takes the question object returned by StackOverflow 
@@ -41,6 +51,38 @@ var showQuestion = function(question) {
 	return result;
 };
 
+//this function takes the user object returned by StackOverFlow
+//and creates new result to be appended to DOM
+var showTopUser = function(data) {
+
+	//clone our result template code
+	var result = $('.templates .users').clone();
+
+	//set the user's profile image in result
+	var image = result.find('.profile-image img');
+	image.attr('src', data.user.profile_image);
+
+	//set the user's display name and show as link 
+	var display = result.find('.name');
+	display.attr('href', data.user.link);
+	display.text(data.user.display_name);
+
+	//set the user's reputation in result
+	var rep = result.find('.reputation');
+	rep.text(data.user.reputation);
+
+	//set the user's post count in result
+	var post = result.find('.post-count');
+	post.text(data.post_count);
+
+	//set the user's score in result
+	var score = result.find('.user-score');
+	score.text(data.score);
+
+	return result;
+
+};
+
 
 // this function takes the results object from StackOverflow
 // and creates info about search results to be appended to DOM
@@ -72,6 +114,7 @@ var getUnanswered = function(tags) {
 		dataType: "jsonp",
 		type: "GET",
 		})
+
 	.done(function(result){
 		var searchResults = showSearchResults(request.tagged, result.items.length);
 
@@ -82,10 +125,41 @@ var getUnanswered = function(tags) {
 			$('.results').append(question);
 		});
 	})
+
 	.fail(function(jqXHR, error, errorThrown){
 		var errorElem = showError(error);
 		$('.search-results').append(errorElem);
 	});
+
+};
+
+var getInspiration = function(tags) {
+	
+	var request = {site: 'stackoverflow'};
+
+	var result = $.ajax({
+		url: "http://api.stackexchange.com/2.2/tags/tags/top-answerers/all_time",
+		data: request,
+		dataType: "jsonp",
+		type: "GET",
+		})
+
+	.done(function(result){
+		var searchResults = showSearchResults(tags, result.items.length);
+
+		$('.search-results').html(searchResults);
+
+		$.each(result.items, function(i, item) {
+			var topUser = showTopUser(item);
+			$('.results').append(topUser);
+		});
+	})
+
+	.fail(function(jqXHR, error, errorThrown){
+		var errorElem = showError(error);
+		$('.search-results').append(errorElem);
+	});
+	
 };
 
 

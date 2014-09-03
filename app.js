@@ -67,7 +67,7 @@ var showTopUser = function(data) {
 	image.attr('src', data.user.profile_image);
 
 	//set the user's display name and show as link 
-	var display = result.find('.name');
+	var display = result.find('.name a');
 	display.attr('href', data.user.link);
 	display.text(data.user.display_name);
 
